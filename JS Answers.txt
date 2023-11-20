@@ -1,0 +1,661 @@
+1.What is a potential pitfall with using typeof bar === "object" to determine if bar is an object? How can this pitfall be avoided?
+    Before doing "typeof bar === 'object'" we have to remeber that in JavaScript "null" is considered as an object.
+    Also "object" in JavaScript is a collection of properties and these comes in key-value pairs. 
+
+    The problem can be avoided by checking bar if its null. 
+
+    const bar = null;
+    console.log((bar !== null) && (typeof bar === 'object'));
+    Output:False
+
+    However, if bar is an array then the output of it would be true.
+
+    const bar = {firstName: "foo", lastName: "bar"};
+    console.log((bar !== null) && ( bar.constructor === 'object'));
+    Output:True
+
+ 2.What will the code below output to the console and why?
+
+    (function(){
+    var a = b = 3;
+    })();
+
+    console.log("a defined? " + (typeof a !== 'undefined'));
+    console.log("b defined? " + (typeof b !== 'undefined'));
+
+    a is 3 but within the scope of the function the line of var is:
+    b = 3, whereas b is declared as a global variable.
+    return value of the assignment express b = 3 
+    var a is the return value of previous expression, thus equals var a = 3
+
+    console.log(typeof b); //"number"
+    console.log(a); //error
+
+3.What will the code below output to the console and why?
+
+    var myObject = {
+        foo: "bar",
+        func: function() {
+            var self = this;
+            console.log("outer func:  this.foo = " + this.foo);
+            console.log("outer func:  self.foo = " + self.foo);
+            (function() {
+                console.log("inner func:  this.foo = " + this.foo);
+                console.log("inner func:  self.foo = " + self.foo);
+            }());
+        }
+    };
+    myObject.func();
+
+    Output:
+        outer func: this.foo = bar 
+        outer func: self.foo = bar 
+        inner func: this.foo = bar
+        inner func: self.foo = bar 
+     
+     The reason why the output are these because "this" ref inside a function which is an object's property. 
+     Then we are using IIFE and this ref inside the IIFE is the global object, therefore "this.foo" means "window.foo" which
+     is undefined. However, "self" is accessable inside that function that also has an equal value as the object.
+    
+ 4.What is the significance of, and reason for, wrapping the entire content of a JavaScript source file in a function block?
+    
+    The reason why we wrap the entire content of a JS because it helps us encapsulate data and functionality inside a module.
+
+    (function () {
+    /* … */
+    })();
+
+5. What is the significance, and what are the benefits, of including 'use strict' at the beginning of a JavaScript source file?
+    The reason why "use strict" at the beginning is because of the stricter parsing and error handling on the JS file. 
+    Benefits of this are debugging, accidental globals, eliminates "this", removes duplicate parameter values, makes eval() safer, 
+    and throws error. 
+
+6.Consider the two functions below. Will they both return the same thing? Why or why not?
+
+    function foo1()
+    {
+    return {
+        bar: "hello"
+    };
+    }
+
+    function foo2()
+    {
+    return
+    {
+        bar: "hello"
+    };
+    }
+
+    console.log("foo1 returns:");
+    console.log(foo1());
+    console.log("foo2 returns:");
+    console.log(foo2());
+
+    Output the result ....
+    foo1 returns:
+    Object {bar: "hello"}
+    foo2 returns:
+    undefined 
+
+    They both return a different thing because of the ASI (automatic semicolon insertion) in the second return.
+    return statment followed by block creationo which is usually ignored in runtime. Not as "return an object".
+    return;
+    {
+        bar: "hello"
+    };
+
+
+7.What will the code below output? Explain your answer.
+
+    console.log(0.1 + 0.2);
+    console.log(0.1 + 0.2 == 0.3);
+
+    Output:
+    0.300000000004 
+    console.log(0.1 + 0.2 == 0.3)
+    console.log(0.30000000000000004 == 0.3)
+    false
+
+    The reason why the output is this because of the floating point number with a limited precision of 64 bits, about 16 digits.
+    When adding two floating point numbers is more than 0.3 which is why.
+
+
+
+8.In what order will the numbers 1-4 be logged to the console when the code below is executed? Why?
+
+    (function() {
+        console.log(1); 
+        setTimeout(function(){console.log(2)}, 1000); 
+        setTimeout(function(){console.log(3)}, 0); 
+        console.log(4);
+    })();
+
+    console.log(1); // 1
+    console.log(4); // 4
+    the code you executed return undefined
+    setTimeout(function(){console.log(3)}, 0); // 3 Executed the next stack
+    setTimeout(function(){console.log(2)}, 1000); // 2 1 sec after
+
+    The undefined comes from the executed statement then the function returns nothing. 
+
+9.
+Write a simple function (less than 160 characters) that returns a boolean indicating whether or not a string is a palindrome.
+
+    function isPalindrome(str) {
+    str = str.replace(/\W/g, ”).toLowerCase();
+    return (str == str.split(”).reverse().join(”));
+    }
+    console.log(isPalindrome("level"));                   // logs 'true'
+    console.log(isPalindrome("levels"));                  // logs 'false'
+    console.log(isPalindrome("A car, a man, a maraca"));  // logs 'true'
+
+10.Write a sum method which will work properly when invoked using either syntax below.
+
+    console.log(sum(2,3));   // Outputs 5
+    console.log(sum(2)(3));  // Outputs 5
+
+    function sum(a,b){
+        if(b===undefined){
+            return function(c){ return parseInt(a)+parseInt(c);}
+        }
+        return parseInt(a)+parseInt(b);
+    }
+    console.log(sum(2,3));
+    console.log(sum(2)(3));
+
+
+11.Consider the following code snippet:
+
+    for (var i = 0; i < 5; i++) {
+    var btn = document.createElement('button');
+    btn.appendChild(document.createTextNode('Button ' + i));
+    btn.addEventListener('click', function(){ console.log(i); });
+    document.body.appendChild(btn);
+    }
+    (a) What gets logged to the console when the user clicks on “Button 4” and why?
+            No matter what the number 5 will always be logged to the console because the onclick method invoked for any of the buttons therefore the loop is already completed.
+    (b) Provide one or more alternate implementations that will work as expected.
+       
+        One way is by using "let" instead
+        for (let i = 0; i < 5; i++) {
+        var btn = document.createElement('button');
+        btn.appendChild(document.createTextNode('Button ' + i));
+        btn.addEventListener('click', function(){ console.log(i); });
+        document.body.appendChild(btn);
+    }
+
+    Another way is by using IIFE 
+    for (var i = 0; i < 5; i++) {
+    (function(i) {
+        var btn = document.createElement('button');
+        btn.appendChild(document.createTextNode('Button ' + i));
+        btn.addEventListener('click', function(){ console.log(i); });
+        document.body.appendChild(btn);
+    })(i);
+}
+
+12.Assuming d is an “empty” object in scope, say:
+
+    var d = {};
+    …what is accomplished using the following code?
+
+    [ 'zebra', 'horse' ].forEach(function(k) {
+        d[k] = undefined;
+    });
+    
+    Output:
+    { zebra: undefined, horse: undefined }
+    The reason why is because there could be duplicates of this and after running it you would be able to get a duplicate free list of elements.
+
+
+13.What will the code below output to the console and why?
+
+    var arr1 = "john".split('');
+    var arr2 = arr1.reverse();
+    var arr3 = "jones".split('');
+    arr2.push(arr3);
+    console.log("array 1: length=" + arr1.length + " last=" + arr1.slice(-1));
+    console.log("array 2: length=" + arr2.length + " last=" + arr2.slice(-1));
+    
+    arr1 and arr2 reference the same array. Changes to arr2 affect arr1.
+    arr2.push(arr3) adds the arr3 array as a single element to the end of arr1 and arr2.
+    The lengths and last elements of arr1 and arr2 reflect this.
+
+14.What will the code below output to the console and why ?
+
+    console.log(1 +  "2" + "2");
+    console.log(1 +  +"2" + "2");
+    console.log(1 +  -"1" + "2");
+    console.log(+"1" +  "1" + "2");
+    console.log( "A" - "B" + "2");
+    console.log( "A" - "B" + 2);
+
+    "122": Concatenation occurs because of the string.
+    "32": Unary plus converts "2" to a number.
+    "0": Unary minus makes the first part -1, then concatenates with "2".
+    "112": Unary plus converts "1" to a number, but the rest are strings.
+    NaN2: Subtraction between non-numbers results in NaN, then concatenation.
+    NaN: Subtraction between non-numbers results in NaN
+
+15.The following recursive code will cause a stack overflow if the array list is too large. How can you fix this and still retain the recursive pattern?
+
+    var list = readHugeList();
+
+    var nextListItem = function() {
+        var item = list.pop();
+
+        if (item) {
+            // process the list item...
+            nextListItem();
+        }
+    };
+    
+    What we can do is use a setTimeout so that way the recursion is endless.
+
+        //fill it with 50000 elements
+    var list = Array(50001).join('1.1').split('.');
+
+    var nextListItem = function() {
+        var item = list.pop();
+
+        if (item) { //should be list.length
+
+            // recursion here!
+            setTimeout( nextListItem, 0 );
+
+        }
+    };
+    nextListItem();
+
+
+16.What is a “closure” in JavaScript? Provide an example.
+    Acess to its parents function after the parent function have return. 
+
+    const parentsCoin = (person) => {
+        let coin = 3 
+        return () =>{
+            coins -= 1
+            if (coins > 0) console.log(
+                `${person} has ${coins} left`)
+                else console.log(
+                    `${person} is out of coins`)
+        }
+    }
+
+    const dad = parentsCoin('Dad')
+    const mom = parentsCoin('Mom')
+
+    Output:
+    dad(2)
+    dad(1)
+    dad(0)
+
+    mom(2)
+    dad(0)
+    mom(1)
+
+17.What would the following lines of code output to the console?
+
+console.log("0 || 1 = "+(0 || 1));
+console.log("1 || 2 = "+(1 || 2));
+console.log("0 && 1 = "+(0 && 1));
+console.log("1 && 2 = "+(1 && 2));
+
+0 || 1 = 1: The || operator returns the first truthy value or the last value if none are truthy.
+1 || 2 = 1: It returns the first truthy value.
+0 && 1 = 0: The && operator returns the first falsy value or the last value if none are falsy.
+1 && 2 = 2: It returns the last value if no falsy values are found.
+
+
+18.What will be the output when the following code is executed? Explain.
+
+console.log(false == '0')
+console.log(false === '0')
+
+true - because non-strict equality '==' performs type coercion 
+false - because strict equality doesnt coerce types so number isnt equal to a string. 
+
+
+19.What is the output out of the following code? Explain your answer.
+
+var a={},
+    b={key:'b'},
+    c={key:'c'};
+
+a[b]=123;
+a[c]=456;
+
+console.log(a[b]);
+
+Output: 456
+
+JS Objects keys are strings. When an object is used as a key its converted to "[object Object]". Both a[b] and a[c] refer a["[object Object]"]
+
+
+20.What will the following code output to the console:
+
+console.log((function f(n){return ((n > 1) ? n * f(n-1) : n)})(10));
+
+The function calculates the factorial of 10. It uses a ternary operator for recursion until n is 1, then multiplies back up the stack.
+
+
+21.Consider the code snippet below. What will the console output be and why?
+
+(function(x) {
+    return (function(y) {
+        console.log(x);
+    })(2)
+})(1);
+
+Output: 1 
+The reason why output is 1 because y is not being used anywhere. 
+
+
+22.What will the following code output to the console and why:
+
+var hero = {
+    _name: 'John Doe',
+    getSecretIdentity: function (){
+        return this._name;
+    }
+};
+
+var stoleSecretIdentity = hero.getSecretIdentity;
+
+console.log(stoleSecretIdentity());
+console.log(hero.getSecretIdentity());
+What is the issue with this code and how can it be fixed.
+
+To fix this make sure to bind var stoleSecretIdentity = hero.getSecretIdentity.bind(hero);
+
+Output:
+undefined
+
+
+23.
+Create a function that, given a DOM Element on the page, will visit the element itself and all of its descendents (not just its immediate children). For each element visited, the function should pass that element to a provided callback function.
+
+The arguments to the function should be:
+
+a DOM element
+a callback function (that takes a DOM element as its argument)
+
+function traverseDOM(element, callback) {
+    callback(element);
+    var list = element.children;
+    for (var i = 0; i < list.length; i++) {
+        traverseDOM(list[i], callback);
+    }
+}
+
+This function applies the callback function to the current element. For each child of the current element the function calls itself 
+recursively.
+
+
+24.
+Testing your this knowledge in JavaScript: What is the output of the following code?
+
+var length = 10;
+function fn() {
+	console.log(this.length);
+}
+
+var obj = {
+  length: 5,
+  method: function(fn) {
+    fn();
+    arguments[0]();
+  }
+};
+
+obj.method(fn, 1);
+
+length is declared in global scope and set to 10.
+
+fn is declared which logs this.length 
+
+obj is declared with a property lenght set to 5 and a method. 
+
+obj.method(fn,1) is called then calls fn twice.
+
+Output:
+10 and 2 
+
+
+25.
+Consider the following code. What will the output be, and why?
+
+(function () {
+    try {
+        throw new Error();
+    } catch (x) {
+        var x = 1, y = 2;
+        console.log(x);
+    }
+    console.log(x);
+    console.log(y);
+})();
+
+The IIFE (function () {...})();  is defined and called. 
+
+try/catch block is defined. 
+
+In the try block an error is being thrown using throw new Error(); then this immediate stops the execution of the try and catch block.
+
+Catch block catches the error of x. 
+
+Catch block, redeclares x and declares y.
+
+After the catch block, console.log x and y are called. X within the catch block cannot be accessible outside that block. 
+
+Output:
+1, undefined, 2.
+
+26.
+What will be the output of this code?
+
+var x = 21;
+var girl = function () {
+    console.log(x);
+    var x = 20;
+};
+girl ();
+
+x is declared in global scope and set to 20
+
+girl is declared.
+
+console.log(x) is called and then x is declared to set 20.
+
+girl() is called to execute the function. 
+
+Output:
+undefined
+
+
+27.
+for (let i = 0; i < 5; i++) {
+  setTimeout(function() { console.log(i); }, i * 1000 );
+}
+What will this code print?
+
+for loop is setup to iterate from 0 to 4 then loop counter "i" is declared with "let" which means it has a block scope.
+
+setTimeout is called. 
+
+setTimeout is a JS function that sets up a function to be called after a specified delay. 
+
+function(){
+    console.log(i)
+}
+and delay is i * 1000 milliseconds
+
+i is declared with let with each iteration loop.
+
+When the function is passed to setTimeout is called. 
+
+Output:
+0,1,2,3,4
+
+28.
+What do the following lines output, and why?
+
+console.log(1 < 2 < 3); First, 1 < 2 is evaluated which is true. Then true < 3 is evaluated. Therefore it is true.
+console.log(3 > 2 > 1); First, 3 > 2  which is ture. Then true > 1 is evaluated. True is coerced to 1 so this becomes 1>1 which is false.
+
+
+29.
+How do you add an element at the begining of an array? How do you add one at the end?
+
+1. add an element at the beginning in an array. 
+let array = [1, 2, 3];
+array.unshift(0);
+// array is now [0, 1, 2, 3]
+
+
+2. add an element at the end of an array.
+let array = [1, 2, 3];
+array.push(4);
+// array is now [1, 2, 3, 4]
+
+30.
+Imagine you have this code:
+
+var a = [1, 2, 3];
+a) Will this result in a crash?
+No it will not crash because this is a standard way to declare an array with its elements. 
+
+
+a[10] = 99;
+b) What will this output?
+Undefined because arrays are dynamic and can have elements added at any index. 
+
+console.log(a[6]);
+
+
+
+31.
+What is the value of typeof undefined == typeof NULL?
+
+typeof undefined == typeof NULL is comparing the types of undefined and NULL. 
+
+The catch here is NULL is not a recognized identifier in JS. LowerCase null is the correct identifier for JS. 
+
+If it is null instead it would return false. This is because typeof undefined retruns the string "undefined", 
+and typeof null returns the string object.
+
+
+32.
+What would following code return?
+
+console.log(typeof typeof 1);
+
+typeof 1  is evaluated 
+
+typeof returns a string that represents the type of its operand which is number.
+
+typeof number is evaluated
+
+as before typeof returns a string that represents the type of its operand. 
+
+Output:
+string
+
+
+
+33.
+What will be the output of the following code:
+
+for (var i = 0; i < 5; i++) {
+	setTimeout(function() { console.log(i); }, i * 1000 );
+}
+Explain your answer. How could the use of closures help here?
+
+for loop is setup to iterate 0-4 then loop counter i is declared with var.
+
+setTimeout is called and is called after a delay. 
+
+i is declared with var, all iteration of loop share the same i variable, so when function passed to setTimeout is called, it refers to i for each iteration.
+
+To get the desired out of 0, 1, 2, 3, and 4 logged to console what we can use is a closure to create a seperate scope for each iteration of the loop.
+
+for (var i = 0; i < 5; i++) {
+  (function(i) {
+    setTimeout(function() { console.log(i); }, i * 1000 );
+  })(i);
+}
+
+
+
+34.
+What is NaN? What is its type? How can you reliably test if a value is equal to NaN?
+
+NaN is "Not a Number" 
+The type of NaN is number.
+Testing if a value is equal to NaN is tricky because NaN is the only JS value that is not equal to itself. That means you cant check NaN with operators/
+However, theres a caveat isNan() coerce the type of its argument to a number so some values like "", true, and false will return false.
+
+
+
+
+
+
+
+35.
+What will the following code output and why?
+
+var b = 1;
+function outer(){
+   	var b = 2
+    function inner(){
+        b++;
+        var b = 3;
+        console.log(b)
+    }
+    inner();
+}
+outer();
+
+When b++ is executed, b is undefined because its declaration has been hoisted but hasnt been assigned a value yet. 
+undefined incremented by one results in NaN, then b is assigned to value 3. 
+
+output:
+3 
+
+
+
+
+36.
+Discuss possible ways to write a function isInteger(x) that determines if x is an integer.
+
+Using Number.isInteger() this function determines whether the passed value is an integer.
+function isInteger(x) {
+  return Number.isInteger(x);
+}
+
+Modulo operator if x is an integer x % 1 will be 0. If x is not an integer then it will be non-zero number
+function isInteger(x) {
+  return x % 1 === 0;
+}
+
+Math.floor, Math.ceil, or Math.round if x is an integer then it will all be x howeve if it is not then it will return a different number from x.
+function isInteger(x) {
+  return Math.floor(x) === x;
+}
+
+
+
+
+37.
+How do you clone an object?
+
+Use object.assign() method is used to copy the values of all properties from one or more source objects to a target object.
+let obj = { a: 1, b: 2 };
+let clonedObj = Object.assign({}, obj);
+
+Use spread operator which allows an iterable such as an array expression or string to be expanded
+let obj = { a: 1, b: 2 };
+let clonedObj = { ...obj };
+
+
